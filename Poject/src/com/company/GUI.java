@@ -14,6 +14,7 @@ public class GUI {
         int option;
         while(run){
 
+            System.out.println("0. SeeMatrix");
             System.out.println("1. GetCell");
             System.out.println("2. DeleteCell");
             System.out.println("3. EditCell");
@@ -24,26 +25,21 @@ public class GUI {
             sn.nextLine();
 
             switch(option){
+                case 0:
+                    System.out.println("You selected the option: GetCell");
+                    this.PrintMatrix(matrix, sn);
+                    break;
                 case 1:
-                    System.out.println("You selected the option 1");
-                    System.out.println("Which cell?");
-                    cellAddress = sn.nextLine();
-                    Cell returnedCell = matrix.GetCell(cellAddress);
-                    System.out.println(returnedCell.content);
+                    System.out.println("You selected the option: GetCell");
+                    this.PrintGetCellInterface(matrix, sn);
                     break;
                 case 2:
-                    System.out.println("You selected the option 2");
-                    System.out.println("Which cell?");
-                    cellAddress = sn.nextLine();
-                    matrix.DeleteCell(cellAddress);
+                    System.out.println("You selected the option: DeleteCell");
+                    this.PrintDeleteCellInterface(matrix, sn);
                     break;
                 case 3:
-                    System.out.println("You selected the option 3");
-                    System.out.println("Which cell?");
-                    cellAddress = sn.nextLine();
-                    System.out.println("Which content?");
-                    String newContent = sn.nextLine();
-                    matrix.EditCell(cellAddress,newContent);
+                    System.out.println("You selected the option: EditCell");
+                    this.PrintEditCellInterface(matrix, sn);
                     break;
                 case 4:
                     run=false;
@@ -58,6 +54,45 @@ public class GUI {
 
         }
 
+
+    }
+
+    public void PrintGetCellInterface(Matrix matrix, Scanner sn){
+        System.out.println("Which cell?");
+        String cellAddress = sn.nextLine();
+        Cell returnedCell = matrix.GetCell(cellAddress);
+        if(returnedCell != null)
+            System.out.println(returnedCell.content);
+        else
+            System.out.println("This cell has no value");
+    }
+
+    public void PrintDeleteCellInterface(Matrix matrix, Scanner sn){
+        System.out.println("Which cell?");
+        String cellAddress = sn.nextLine();
+        matrix.DeleteCell(cellAddress);
+    }
+
+    public void PrintEditCellInterface(Matrix matrix, Scanner sn){
+        System.out.println("Which cell?");
+        String cellAddress = sn.nextLine();
+        System.out.println("Which content?");
+        String newContent = sn.nextLine();
+        matrix.EditCell(cellAddress,newContent);
+    }
+
+    public void PrintMatrix(Matrix matrix, Scanner sn){
+        System.out.println("Will show 10 columns and 10 rows\n at which column you want to start? (char)");
+        String column = sn.nextLine();
+        System.out.println("At which row you want to start? (num)");
+        String row = sn.nextLine();
+
+        for(int i = 0; i<10; i++){
+            System.out.println("---------------------------------------------------------------------");
+            for(int j = 0; j<10; j++){
+                System.out.print("Hola"+ Integer.toString(j));
+            }
+        }
 
     }
 }

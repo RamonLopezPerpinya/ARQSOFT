@@ -1,30 +1,10 @@
 package com.company;
-
-import netscape.javascript.JSObject;
-
-import java.io.*;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Scanner;
-
-
 
 public class Matrix {
 
     Hashtable<String,Cell> hashMatrix = new Hashtable<String,Cell>();
 
-
-    /*public Matrix(int n){
-        numRows = n;
-        numColumns = n;
-        matrix = new ArrayList<>();
-        for(int i=0;i<this.numRows;i++){
-            matrix.add(new ArrayList<Cell>());
-            for(int j = 0; j < this.numColumns; j++){
-                matrix.get(i).add(new Cell());
-            }
-        }
-    }*/
 
     public Matrix(){}
 
@@ -37,7 +17,6 @@ public class Matrix {
     }
 
     public void EditCell(String address, String newContent){
-
 
         if(this.isNumeric(newContent)){
 
@@ -101,22 +80,13 @@ public class Matrix {
     }*/
 
     public boolean isNumeric(String string) {
-        int intValue;
-
-        //System.out.println(String.format("Parsing string: \"%s\"", string));
-
-        /*if(string == null || string.equals("")) {
-            //System.out.println("String cannot be parsed, it is null or empty.");
-            return false;
-        }*/
-
         try {
-            intValue = Integer.parseInt(string);
+            Integer.parseInt(string);
             return true;
-        } catch (NumberFormatException e) {
-            //System.out.println("Input String cannot be parsed to Integer.");
         }
-        return false;
+        catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     /*public void SetContentInACell(int row, int column){

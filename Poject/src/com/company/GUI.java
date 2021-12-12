@@ -1,4 +1,5 @@
 package com.company;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class GUI {
@@ -20,13 +21,13 @@ public class GUI {
             System.out.println("3. EditCell");
             System.out.println("4. Exit");
 
-            System.out.println("What you wanna do?");
-            option = sn.nextInt();
-            sn.nextLine();
+
+            option = this.GetNumberFromUser("Option must be a numerical","What you wanna do?",sn);
+
 
             switch(option){
                 case 0:
-                    System.out.println("You selected the option: GetCell");
+                    System.out.println("You selected the option: SeeMatrix");
                     this.PrintMatrix(matrix, sn);
                     break;
                 case 1:
@@ -50,9 +51,55 @@ public class GUI {
         }
     }
 
+    public boolean isNumeric(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        }
+        catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public int GetNumberFromUser(String message, String question, Scanner sn){
+        boolean notNumber = true;
+        int num = 0;
+        while(notNumber) {
+            System.out.println(question);
+            try {
+                num = sn.nextInt();
+                notNumber = false;
+            } catch (InputMismatchException e) {
+                System.out.println(message);
+            }
+            sn.nextLine();
+        }
+        return num;
+    }
+
+    public String GetOnlyStrings(String message, String question, Scanner sn){
+        boolean notString = true;
+        String column = "";
+        while (notString) {
+            System.out.println(question);
+            column = sn.nextLine();
+            for (int i = 0; i < column.length(); i++) {
+                if (this.isNumeric(Character.toString(column.charAt(i)))) {
+                    System.out.println(message);
+                    notString = true;
+                }
+                else{
+                    notString = false;
+                }
+            }
+        }
+        return column;
+    }
+
     public void PrintGetCellInterface(Matrix matrix, Scanner sn){
-        System.out.println("Which cell?");
-        String cellAddress = sn.nextLine();
+        String column = this.GetOnlyStrings("The column must be only letters","Which column? (String)",sn);
+        int row = this.GetNumberFromUser("The rows must be numerical","Which row? (num)", sn);
+        String cellAddress = column.toUpperCase() + Integer.toString(row);
         Cell returnedCell = matrix.GetCell(cellAddress);
         if(returnedCell != null)
             System.out.println(returnedCell.content);
@@ -61,17 +108,21 @@ public class GUI {
     }
 
     public void PrintDeleteCellInterface(Matrix matrix, Scanner sn){
-        System.out.println("Which cell?");
-        String cellAddress = sn.nextLine();
+        String column = this.GetOnlyStrings("The column must be only letters","Which column? (String)",sn);
+        int row = this.GetNumberFromUser("The rows must be numerical","Which row? (num)", sn);
+        String cellAddress = column.toUpperCase() + Integer.toString(row);
         matrix.DeleteCell(cellAddress);
     }
 
     public void PrintEditCellInterface(Matrix matrix, Scanner sn){
-        System.out.println("Which cell?");
-        String cellAddress = sn.nextLine();
+
+        String column = this.GetOnlyStrings("The column must be only letters","Will show 10 columns and 10 rows\n at which column you want to start? (char)",sn);
+        int row = this.GetNumberFromUser("The rows must be numerical","At which row you want to start? (num)", sn);
+        String cellAddress = column.toUpperCase() + Integer.toString(row);
         System.out.println("Which content?");
         String newContent = sn.nextLine();
-        matrix.EditCell(cellAddress,newContent);
+        matrix.EditCell(cellAddress, newContent);
+
     }
 
     public String formatCellContent(String content, int length){
@@ -115,13 +166,20 @@ public class GUI {
     }
 
     public void PrintMatrix(Matrix matrix, Scanner sn){
-        System.out.println("Will show 10 columns and 10 rows\n at which column you want to start? (char)");
-        String column = sn.nextLine();
-        System.out.println("At which row you want to start? (num)");
-        int row = sn.nextInt();
-        System.out.println("How many characters per cell?");
-        int cell_size = sn.nextInt();
 
+        String column = this.GetOnlyStrings("The column must be only letters","Will show 10 columns and 10 rows\n at which column you want to start? (char)", sn);
+        int row = this.GetNumberFromUser("The rows must be numerical","At which row you want to start? (num)", sn);
+        int cell_size = this.GetNumberFromUser("The characters must be numerical","How many characters per cell?", sn);
+        column = column.toUpperCase();
+        /*REVISAR BE
+        * REVISAR BE
+        * REVISAR BE
+        * REVISAR BE
+        * REVISAR BE
+        * REVISAR BE
+        * REVISAR BE
+        * REVISAR BE
+        * */
         char character = column.charAt(0);
         int ascii = (int) character;
 
@@ -136,7 +194,7 @@ public class GUI {
             for(int j = 0; j<10; j++){
                 int cur_ascii = ascii + j;
                 char cur_char = (char) cur_ascii;
-                String address = Character.toString(cur_char) + Integer.toString(i + row);
+                String address = Character.toString(cur_char).toUpperCase() + Integer.toString(i + row);
                 Cell currentCell = matrix.GetCell(address);
                 if(currentCell == null){
                     System.out.print(this.formatCellContent("", cell_size));

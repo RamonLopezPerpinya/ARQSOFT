@@ -12,59 +12,19 @@ public class GUI {
         this.help = new Helper();
     }
 
-    public void PrintMenu(Spreadsheet spreadsheet) throws IOException {
+    public int PrintMenu(Scanner sn) throws IOException {
+
+        System.out.println("0. SeeMatrix");
+        System.out.println("1. GetCell");
+        System.out.println("2. DeleteCell");
+        System.out.println("3. EditCell");
+        System.out.println("4. ExportSpreadsheet");
+        System.out.println("5. ImportSpreadsheet");
+        System.out.println("6. Exit");
 
 
-        String cellAddress;
-        Scanner sn = new Scanner(System.in);
-        boolean run = true;
-        int option;
-        while(run){
+        return this.GetNumberFromUser("Option must be a numerical","What you wanna do?",sn);
 
-            System.out.println("0. SeeMatrix");
-            System.out.println("1. GetCell");
-            System.out.println("2. DeleteCell");
-            System.out.println("3. EditCell");
-            System.out.println("4. ExportSpreadsheet");
-            System.out.println("5. ImportSpreadsheet");
-            System.out.println("6. Exit");
-
-
-            option = this.GetNumberFromUser("Option must be a numerical","What you wanna do?",sn);
-
-
-            switch(option){
-                case 0:
-                    System.out.println("You selected the option: SeeMatrix");
-                    this.PrintMatrix(spreadsheet, sn);
-                    break;
-                case 1:
-                    System.out.println("You selected the option: GetCell");
-                    this.PrintGetCellInterface(spreadsheet, sn);
-                    break;
-                case 2:
-                    System.out.println("You selected the option: DeleteCell");
-                    this.PrintDeleteCellInterface(spreadsheet, sn);
-                    break;
-                case 3:
-                    System.out.println("You selected the option: EditCell");
-                    this.PrintEditCellInterface(spreadsheet, sn);
-                    break;
-                case 4:
-                    System.out.println("You selected the option: ExportSpreadsheet");
-                    this.PrintExportSpreadSheetInterface(spreadsheet, sn);
-                    break;
-                case 5:
-                    System.out.println("You selected the option: ImportSpreadsheet");
-                    this.PrintImportSpreadSheetInterface(spreadsheet, sn);
-                    break;
-                case 6:
-                    run=false;
-                    break;
-                default:
-                    System.out.println("Only number between 1 y 4");
-            }
-        }
     }
 
     public boolean isNumeric(String string) {
@@ -112,7 +72,7 @@ public class GUI {
         return column;
     }
 
-    public void PrintImportSpreadSheetInterface(Spreadsheet spreadsheet, Scanner sn) throws IOException {
+    public String PrintImportSpreadSheetInterface(Scanner sn) throws IOException {
         String userDirectory = System.getProperty("user.dir");
         File file = new File(userDirectory+"/output");
         String[] fileNames = file.list();
@@ -124,18 +84,13 @@ public class GUI {
         System.out.println();
         int input = this.GetNumberFromUser("Which spreadsheet do you want to load from the avaliable above? (enter number)",
                                             "Please, only number", sn );
-        spreadsheet.importSpreadSheet("output/" + fileNames[input]);
-
+        return "output/" + fileNames[input];
     }
 
-    public void PrintExportSpreadSheetInterface(Spreadsheet spreadsheet, Scanner sn) throws IOException {
-        String userDirectory = System.getProperty("user.dir");
-        File file = new File(userDirectory+"/output");
-        file.mkdir();
-
+    public String PrintExportSpreadSheetInterface(Scanner sn) throws IOException {
         System.out.println("Which name do you want to save the spreadsheet");
         String name = sn.nextLine();
-        spreadsheet.exportSpreadsheet("output/" + name);
+        return "output/" + name;
 
     }
 
@@ -177,7 +132,6 @@ public class GUI {
                 content = content + " ";
             }
         }
-
 
         content = content + "|";
         return content;

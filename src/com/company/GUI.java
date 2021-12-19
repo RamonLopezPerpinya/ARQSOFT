@@ -1,12 +1,17 @@
 package com.company;
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class GUI {
 
-    public GUI(){}
+    //SpreadsheetSystem spreadsheetSystem = new SpreadsheetSystem();
 
-    public void PrintMenu(Matrix matrix){
+    public GUI(){
+
+    }
+
+    public void PrintMenu(Spreadsheet spreadsheet) throws IOException {
 
 
         String cellAddress;
@@ -19,7 +24,9 @@ public class GUI {
             System.out.println("1. GetCell");
             System.out.println("2. DeleteCell");
             System.out.println("3. EditCell");
-            System.out.println("4. Exit");
+            System.out.println("4. ExportSpreadsheet");
+            System.out.println("5. ImportSpreadsheet");
+            System.out.println("6. Exit");
 
 
             option = this.GetNumberFromUser("Option must be a numerical","What you wanna do?",sn);
@@ -28,21 +35,29 @@ public class GUI {
             switch(option){
                 case 0:
                     System.out.println("You selected the option: SeeMatrix");
-                    this.PrintMatrix(matrix, sn);
+                    this.PrintMatrix(spreadsheet, sn);
                     break;
                 case 1:
                     System.out.println("You selected the option: GetCell");
-                    this.PrintGetCellInterface(matrix, sn);
+                    this.PrintGetCellInterface(spreadsheet, sn);
                     break;
                 case 2:
                     System.out.println("You selected the option: DeleteCell");
-                    this.PrintDeleteCellInterface(matrix, sn);
+                    this.PrintDeleteCellInterface(spreadsheet, sn);
                     break;
                 case 3:
                     System.out.println("You selected the option: EditCell");
-                    this.PrintEditCellInterface(matrix, sn);
+                    this.PrintEditCellInterface(spreadsheet, sn);
                     break;
                 case 4:
+                    System.out.println("You selected the option: ExportSpreadsheet");
+                    this.PrintExportSpreadSheetInterface(spreadsheet, sn);
+                    break;
+                case 5:
+                    System.out.println("You selected the option: ImportSpreadsheet");
+                    this.PrintImportSpreadSheetInterface(spreadsheet, sn);
+                    break;
+                case 6:
                     run=false;
                     break;
                 default:
@@ -96,32 +111,46 @@ public class GUI {
         return column;
     }
 
-    public void PrintGetCellInterface(Matrix matrix, Scanner sn){
+    public void PrintImportSpreadSheetInterface(Spreadsheet spreadsheet, Scanner sn) throws IOException {
+        System.out.println("Which spreadsheet do you want to load");
+        String name = sn.nextLine();
+        spreadsheet.importSpreadSheet(name);
+
+    }
+
+    public void PrintExportSpreadSheetInterface(Spreadsheet spreadsheet, Scanner sn) throws IOException {
+        System.out.println("Which name do you want to save the spreadsheet");
+        String name = sn.nextLine();
+        spreadsheet.exportSpreadsheet(name);
+
+    }
+
+    public void PrintGetCellInterface(Spreadsheet spreadsheet, Scanner sn){
         String column = this.GetOnlyStrings("The column must be only letters","Which column? (String)",sn);
         int row = this.GetNumberFromUser("The rows must be numerical","Which row? (num)", sn);
         String cellAddress = column.toUpperCase() + Integer.toString(row);
-        Cell returnedCell = matrix.GetCell(cellAddress);
+        Cell returnedCell = spreadsheet.GetCell(cellAddress);
         if(returnedCell != null)
             System.out.println(returnedCell.content);
         else
             System.out.println("This cell has no value");
     }
 
-    public void PrintDeleteCellInterface(Matrix matrix, Scanner sn){
+    public void PrintDeleteCellInterface(Spreadsheet spreadsheet, Scanner sn){
         String column = this.GetOnlyStrings("The column must be only letters","Which column? (String)",sn);
         int row = this.GetNumberFromUser("The rows must be numerical","Which row? (num)", sn);
         String cellAddress = column.toUpperCase() + Integer.toString(row);
-        matrix.DeleteCell(cellAddress);
+        spreadsheet.DeleteCell(cellAddress);
     }
 
-    public void PrintEditCellInterface(Matrix matrix, Scanner sn){
+    public void PrintEditCellInterface(Spreadsheet spreadsheet, Scanner sn){
 
         String column = this.GetOnlyStrings("The column must be only letters","Will show 10 columns and 10 rows\n at which column you want to start? (char)",sn);
         int row = this.GetNumberFromUser("The rows must be numerical","At which row you want to start? (num)", sn);
         String cellAddress = column.toUpperCase() + Integer.toString(row);
         System.out.println("Which content?");
         String newContent = sn.nextLine();
-        matrix.EditCell(cellAddress, newContent);
+        spreadsheet.SetCell(cellAddress, newContent);
 
     }
 
@@ -165,7 +194,7 @@ public class GUI {
         System.out.println(header);
     }
 
-    public void PrintMatrix(Matrix matrix, Scanner sn){
+    public void PrintMatrix(Spreadsheet spreadsheet, Scanner sn){
 
         String column = this.GetOnlyStrings("The column must be only letters","Will show 10 columns and 10 rows\n at which column you want to start? (char)", sn);
         int row = this.GetNumberFromUser("The rows must be numerical","At which row you want to start? (num)", sn);
@@ -195,7 +224,7 @@ public class GUI {
                 int cur_ascii = ascii + j;
                 char cur_char = (char) cur_ascii;
                 String address = Character.toString(cur_char).toUpperCase() + Integer.toString(i + row);
-                Cell currentCell = matrix.GetCell(address);
+                Cell currentCell = spreadsheet.GetCell(address);
                 if(currentCell == null){
                     System.out.print(this.formatCellContent("", cell_size));
                 }

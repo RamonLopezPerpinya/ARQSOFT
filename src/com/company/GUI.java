@@ -1,4 +1,5 @@
 package com.company;
+import java.io.File;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -6,9 +7,9 @@ import java.util.Scanner;
 public class GUI {
 
     //SpreadsheetSystem spreadsheetSystem = new SpreadsheetSystem();
-
+    Helper help;
     public GUI(){
-
+        this.help = new Helper();
     }
 
     public void PrintMenu(Spreadsheet spreadsheet) throws IOException {
@@ -112,16 +113,29 @@ public class GUI {
     }
 
     public void PrintImportSpreadSheetInterface(Spreadsheet spreadsheet, Scanner sn) throws IOException {
-        System.out.println("Which spreadsheet do you want to load");
-        String name = sn.nextLine();
-        spreadsheet.importSpreadSheet(name);
+        String userDirectory = System.getProperty("user.dir");
+        File file = new File(userDirectory+"/output");
+        String[] fileNames = file.list();
+
+        for(int i = 0 ; i < fileNames.length ; i++ ){
+            System.out.println(Integer.toString(i) + ". " + fileNames[i]);
+        }
+
+        System.out.println();
+        int input = this.GetNumberFromUser("Which spreadsheet do you want to load from the avaliable above? (enter number)",
+                                            "Please, only number", sn );
+        spreadsheet.importSpreadSheet("output/" + fileNames[input]);
 
     }
 
     public void PrintExportSpreadSheetInterface(Spreadsheet spreadsheet, Scanner sn) throws IOException {
+        String userDirectory = System.getProperty("user.dir");
+        File file = new File(userDirectory+"/output");
+        file.mkdir();
+
         System.out.println("Which name do you want to save the spreadsheet");
         String name = sn.nextLine();
-        spreadsheet.exportSpreadsheet(name);
+        spreadsheet.exportSpreadsheet("output/" + name);
 
     }
 
@@ -145,8 +159,8 @@ public class GUI {
 
     public void PrintEditCellInterface(Spreadsheet spreadsheet, Scanner sn){
 
-        String column = this.GetOnlyStrings("The column must be only letters","Will show 10 columns and 10 rows\n at which column you want to start? (char)",sn);
-        int row = this.GetNumberFromUser("The rows must be numerical","At which row you want to start? (num)", sn);
+        String column = this.GetOnlyStrings("The column must be only letters","Which column? (String)",sn);
+        int row = this.GetNumberFromUser("The rows must be numerical","Which row? (num)", sn);
         String cellAddress = column.toUpperCase() + Integer.toString(row);
         System.out.println("Which content?");
         String newContent = sn.nextLine();
@@ -186,44 +200,35 @@ public class GUI {
         String header = String.format("%1$"+(1+cell_size)+ "s", string) + "|";
 
         for(int i = 0; i < 10; i++){
-            String temp_header = String.format("%1$"+cell_size+ "s", string);
-            char[] chars = temp_header.toCharArray();
-            chars[cell_size/2] = (char) (start_col + i);
-            header = header + new String(chars) + "|";
+            String temp_header = String.format("%1$"+cell_size/2+ "s", string);
+            temp_header += help.fromIntToString(start_col + i);
+            int curr_size = temp_header.length();
+            temp_header += String.format("%1$"+(cell_size - curr_size) + "s", string);
+            header = header + temp_header + "|";
         }
         System.out.println(header);
     }
 
     public void PrintMatrix(Spreadsheet spreadsheet, Scanner sn){
 
-        String column = this.GetOnlyStrings("The column must be only letters","Will show 10 columns and 10 rows\n at which column you want to start? (char)", sn);
+        String column = this.GetOnlyStrings("The column must be only letters",
+                                            "Will show 10 columns and 10 rows\n at which column you want to start? (char)", sn);
         int row = this.GetNumberFromUser("The rows must be numerical","At which row you want to start? (num)", sn);
         int cell_size = this.GetNumberFromUser("The characters must be numerical","How many characters per cell?", sn);
         column = column.toUpperCase();
-        /*REVISAR BE
-        * REVISAR BE
-        * REVISAR BE
-        * REVISAR BE
-        * REVISAR BE
-        * REVISAR BE
-        * REVISAR BE
-        * REVISAR BE
-        * */
-        char character = column.charAt(0);
-        int ascii = (int) character;
+        int columnIdx = help.fromStringToInt(column);
 
         String separator = this.doSeparator(cell_size);
 
-        this.PrintMatrixHeader(ascii, cell_size);
+        this.PrintMatrixHeader(columnIdx, cell_size);
 
         for(int i = 0; i<10; i++){
 
             System.out.print(separator + "|" + this.formatCellContent(Integer.toString(i + row), cell_size));
 
             for(int j = 0; j<10; j++){
-                int cur_ascii = ascii + j;
-                char cur_char = (char) cur_ascii;
-                String address = Character.toString(cur_char).toUpperCase() + Integer.toString(i + row);
+                int cur_column = columnIdx + j;
+                String address = help.fromIntToString(cur_column)+ Integer.toString(i + row);
                 Cell currentCell = spreadsheet.GetCell(address);
                 if(currentCell == null){
                     System.out.print(this.formatCellContent("", cell_size));

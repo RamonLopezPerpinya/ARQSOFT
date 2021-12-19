@@ -8,10 +8,6 @@ public class Main {
 	// write your code here
         SpreadsheetSystem spreadsheetSystem = new SpreadsheetSystem();
         spreadsheetSystem.run();
-
-
-
-
     }
 
 }

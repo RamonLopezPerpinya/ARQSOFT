@@ -1,5 +1,8 @@
 package com.company;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Hashtable;
 
 public interface Spreadsheet {
@@ -10,9 +13,9 @@ public interface Spreadsheet {
 
     public void SetCell(String address, String newContent);
 
-    public boolean exportSpreadsheet(String txt);
+    public String exportSpreadsheet();
 
-    public boolean importSpreadSheet(String name);
+    public boolean importSpreadSheet(BufferedReader reader) throws IOException;
 
 
 }

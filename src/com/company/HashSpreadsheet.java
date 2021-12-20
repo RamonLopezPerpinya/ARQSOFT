@@ -30,7 +30,7 @@ public class HashSpreadsheet implements Spreadsheet{
 
     public Hashtable GetMatrix(){return hashMatrix;}
 
-    public boolean exportSpreadsheet(String txt) {
+    public String exportSpreadsheet() {
         String column = "";
         int row = 0;
         String maxColumn = "A";
@@ -41,9 +41,10 @@ public class HashSpreadsheet implements Spreadsheet{
                 if (help.isNumeric(Character.toString(key.charAt(i)))){
                     column = key.substring(0,i);
                     row = Integer.parseInt(key.substring(i));
+                    break;
                 }
-
             }
+
             if(maxRow<row){
                 maxRow = row;
             }
@@ -53,57 +54,28 @@ public class HashSpreadsheet implements Spreadsheet{
             }
         }
         int maxC = help.fromStringToInt(maxColumn);
-        String contentFile= "";
+        String fileContent= "";
         for(int i = 0; i<maxRow;i++){
             String rowContent = "";
             String rowAddress = Integer.toString(i+1);
             for(int j = 0; j< maxC;j++){
                 String address = help.fromIntToString(j+1) + rowAddress;
                 if(this.GetCell(address)!= null){
-
                    rowContent = rowContent + this.GetCell(address).content + ";";
                 }
                 else{
-
                     rowContent += ";";
-
                 }
             }
-            contentFile = contentFile + rowContent.substring(0,rowContent.length()-1) + "\n";
+            fileContent = fileContent + rowContent.substring(0,rowContent.length()-1) + "\n";
         }
 
-        BufferedWriter file = null;
-        try{
-        file = new BufferedWriter(new FileWriter(txt));
-        file.write(contentFile);
-
-        }
-        catch ( IOException e){}
-
-        finally{
-                try
-                {
-                    if ( file != null)
-                    file.close( );
-                }
-                catch ( IOException e)
-                {
-                }
-                }
-        return true;
-
-
+        return fileContent;
 
     }
 
-    public boolean importSpreadSheet(String nameFile) {
+    public boolean importSpreadSheet(BufferedReader reader) throws IOException {
 
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(nameFile));
-        }
-        catch ( FileNotFoundException f){}
-        try {
             StringBuilder sb = new StringBuilder();
             String line = reader.readLine();
 
@@ -125,18 +97,7 @@ public class HashSpreadsheet implements Spreadsheet{
                 line = reader.readLine();
             }
 
-        }
-        catch( IOException e){}
-        finally {
-            try
-            {
-                if (reader != null)
-                    reader.close( );
-            }
-            catch (IOException e)
-            {
-            }
-        }
+
 
        return true;
 

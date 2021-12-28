@@ -5,8 +5,15 @@ import java.util.List;
 
 public class Calculator {
 
-    Spreadsheet spreadsheet;
+    Spreadsheet spreadsheet = new HashSpreadsheet();
     Helper help = new Helper();
+
+
+    public void run(Spreadsheet sp, String address){
+        this.spreadsheet = sp;
+        String content = spreadsheet.GetCell(address).content;
+        spreadsheet.SetCellValue(address,  this.Result(content));
+    }
 
     public double Result(String formula){
         String suma = "";
@@ -22,7 +29,7 @@ public class Calculator {
                     if(formula.charAt(j) == ')') {
                         closeP++;
                         if (closeP == openP) {
-                            suma = formula.substring(index + 4, j - 1);
+                            suma = formula.substring(index + 4, j );
                             break;
                         }
                     }
@@ -51,10 +58,10 @@ public class Calculator {
         ArrayList<String> finalSelection = new ArrayList<String>();
         String [] elements =  selection.split(";");
         for(int i = 0; i<elements.length;i++){
-            if(elements[i].contains(":")){
+            if(elements[i].contains(":"))
                 finalSelection.addAll(this.Range(elements[i]));
-            }
-            finalSelection.add(elements[i]);
+            else
+                finalSelection.add(elements[i]);
         }
         return this.fromAddressToDouble(finalSelection);
 
@@ -69,7 +76,7 @@ public class Calculator {
                 arrayNums.add(Double.parseDouble(element));
             }
             else{
-                Cell cell = spreadsheet.GetCell(element);
+                Cell cell = this.spreadsheet.GetCell(element);
                 if(cell == null || cell instanceof CellString)
                     continue;
 

@@ -4,6 +4,19 @@ public class Helper {
 
     public Helper(){}
 
+    public int[] fromAddressToIndex(String address){
+        int [] index = new int[2];
+        for(int i =0; i<address.length();i++) {
+            if (this.isNumeric(Character.toString(address.charAt(i)))){
+                index[0] = this.fromStringToInt(address.substring(0,i));
+                index[1] = Integer.parseInt(address.substring(i));
+                break;
+            }
+        }
+        return index;
+
+
+    }
     public boolean isNumeric(String string) {
         try {
             Integer.parseInt(string);

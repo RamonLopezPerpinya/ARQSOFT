@@ -2,12 +2,16 @@ package com.company;
 
 public class CellFormula extends Cell{
 
-    String value;
+    Double value;
     Tree tree;
+    Calculator calculator = new Calculator();
 
-    public CellFormula(String value){
-        this.value = value;
-        this.content = value;
-        tree = new Tree();
+    public CellFormula(String content){
+        this.content = content;
+        //tree = new Tree(content);
+        this.value = calculator.Result(content);
     }
+
+
+
 }

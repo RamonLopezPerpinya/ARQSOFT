@@ -30,6 +30,7 @@ public class SpreadsheetSystem {
         int option;
         boolean run = true;
         String filename = "";
+        String addres = "";
         while(run) {
             option = gui.PrintMenu(sn);
 
@@ -38,36 +39,59 @@ public class SpreadsheetSystem {
                     System.out.println("You selected the option: SeeMatrix");
                     gui.PrintMatrix(spreadsheet, sn);
                     break;
-                case 1:
-                    System.out.println("You selected the option: GetCell");
-                    gui.PrintGetCellInterface(spreadsheet, sn);
+                case 1: // get cell
+                    addres = gui.getCellAddresFromUser(sn, "You selected the option: PrintCell");
+                    this.printCell(addres);
                     break;
-                case 2:
-                    System.out.println("You selected the option: DeleteCell");
-                    gui.PrintDeleteCellInterface(spreadsheet, sn);
+                case 2: // delete cell
+                    addres = gui.getCellAddresFromUser(sn, "You selected the option: DeleteCell");
+                    this.deleteCell(addres);
                     break;
-                case 3:
-                    System.out.println("You selected the option: EditCell");
-                    gui.PrintEditCellInterface(spreadsheet, sn);
+                case 3: // edit cell
+                    addres = gui.getCellAddresFromUser(sn,"You selected the option: EditCell");
+                    this.editCell(addres);
                     break;
-                case 4:
-                    System.out.println("You selected the option: ExportSpreadsheet");
-                    filename = gui.PrintExportSpreadSheetInterface(sn);
+                case 4: // export spreadsheet
+                    filename = gui.exportInterface(sn);
                     this.exportSpreadsheet(filename);
                     break;
-                case 5:
-                    System.out.println("You selected the option: ImportSpreadsheet");
-                    filename = gui.PrintImportSpreadSheetInterface(sn);
+                case 5: // import spreadsheet
+                    filename = gui.importInterface(sn);
                     this.importSpreadsheet(filename);
                     break;
                 case 6:
                     run = false;
                     break;
                 default:
-                    System.out.println("Only number between 1 y 4");
+                    System.out.println("Only number from 0 to 6 !!  !!! ");
             }
         }
     }
+
+
+    // print cell
+    public void printCell(String addres){
+        Cell returnedCell = this.spreadsheet.GetCell(addres);
+        if(returnedCell != null) {
+            System.out.println("Addres: " + addres);
+            System.out.println("Content: " + returnedCell.content);
+        }
+        else
+            System.out.println("This cell has no value");
+    }
+
+    // delete cell
+    public void deleteCell(String addres){
+        this.spreadsheet.DeleteCell(addres);
+    }
+
+    // edit cell
+    public void editCell(String addres){
+        String content = gui.getUserInput("Introduce the content:", sn);
+        spreadsheet.SetCell(addres, content);
+    }
+
+    // export spreadsheet
     public void exportSpreadsheet(String filename){
 
         String userDirectory = System.getProperty("user.dir");
@@ -94,6 +118,7 @@ public class SpreadsheetSystem {
         }
     }
 
+    // import spreadsheet
     public void importSpreadsheet(String nameFile){
         BufferedReader reader = null;
         try {
@@ -111,6 +136,6 @@ public class SpreadsheetSystem {
                 if (reader != null)
                     reader.close();
             } catch (IOException e) {}
-            }
+        }
     }
 }

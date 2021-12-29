@@ -22,7 +22,7 @@ public class Helper {
     }
     public boolean isNumeric(String string) {
         try {
-            Integer.parseInt(string);
+            Double.parseDouble(string);
             return true;
         }
         catch (NumberFormatException e) {

@@ -3,6 +3,9 @@ package com.company;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+
 public class Calculator {
 
     Spreadsheet spreadsheet = new HashSpreadsheet();
@@ -14,9 +17,10 @@ public class Calculator {
         String content = spreadsheet.GetCell(address).content;
         spreadsheet.SetCellValue(address,  this.Result(content));
     }
-
+    //=SUM(...)+4+45*56-MIN(-...)/777
+    //=A3:E3
     public double Result(String formula){
-        String suma = "";
+        /*String suma = "";
         if(formula.indexOf("SUM")>=0){
 
                 int index = formula.indexOf("SUM");
@@ -36,8 +40,47 @@ public class Calculator {
                       j++;
                 }
         }
-        return this.sumArrayList(this.Selection(suma));
+        return this.sumArrayList(this.Selection(suma));*/
+        Tree newTree = new Tree();
+        String separator = this.checkNextSeparator(formula);
+        String[] children = this.checkFormulaAndSplit(formula,separator);
+        newTree.root = new Node(separator);
+        for(int i = 0; i<children.length;i++){
+            newTree.root.children.add(new Node(children[i]));
+        }
+        return 1.1;
     }
+
+    public String checkNextSeparator(String formula){
+        int i =0;
+        String[] separators = {"\\*","/","\\+","-"};
+        String[] divided= null;
+        while(divided == null && i<4){
+            divided =  this.checkFormulaAndSplit(formula,separators[i]);
+            i++;
+        }
+        if(divided == null){
+            return "";
+        }
+        return separators[i-1];
+    }
+
+
+
+    public String[] checkFormulaAndSplit(String formula, String separator){
+        String aux = separator.replace("\\", "");
+        if(formula.contains(aux)) {
+            return formula.split(separator);
+        }
+        else
+            return null;
+        }
+
+    /*public String[] checkProducts(String[] arrayProducts){
+        for(int i=0; i<=arrayProducts.length;i++){
+        String [] arrayRatio = arrayProducts[i].split("/");}
+        return arrayRatio;
+    }*/
 
     //A1:B2
     public ArrayList<String> Range(String range){
@@ -64,8 +107,6 @@ public class Calculator {
                 finalSelection.add(elements[i]);
         }
         return this.fromAddressToDouble(finalSelection);
-
-
     }
 
     public ArrayList<Double> fromAddressToDouble(ArrayList<String> selection){
@@ -97,6 +138,30 @@ public class Calculator {
 
         return result;
     }
+
+    public double maxArrayList(ArrayList<Double> arrayNums){
+        double result = NEGATIVE_INFINITY;
+        for(Double max : arrayNums){
+            if(max>result)
+                result = max;
+        }
+        return result;
+    }
+
+    public double minArrayList(ArrayList<Double> arrayNums){
+        double result = POSITIVE_INFINITY;
+        for(Double min : arrayNums){
+            if(min<result)
+                result = min;
+        }
+        return result;
+    }
+
+    public double promedArrayList(ArrayList<Double> arrayNums){
+        return this.sumArrayList(arrayNums)/(arrayNums.size());
+    }
+
+
 
 
 

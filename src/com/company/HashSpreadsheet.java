@@ -1,10 +1,16 @@
 package com.company;
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Hashtable;
 
 public class HashSpreadsheet implements Spreadsheet{
 
     Hashtable<String,Cell> hashMatrix = new Hashtable<String,Cell>();
+
+    Set<String> setOfFormulas = new TreeSet<String>();
 
     CellFactory cellFactory = new CellFactory();
 
@@ -19,12 +25,27 @@ public class HashSpreadsheet implements Spreadsheet{
         return hashMatrix.get(cell);
     }
 
+    public Set<String> GetFormulas() { return this.setOfFormulas; }
+
+
     public void DeleteCell(String cell){
         hashMatrix.remove(cell);
     }
 
     public void SetCell(String address, String newContent){
-        hashMatrix.put(address, cellFactory.constructCell(newContent));
+        Cell cell = cellFactory.constructCell(newContent);
+        if( cell instanceof CellFormula){
+            setOfFormulas.add(address);
+        }
+        else {
+            setOfFormulas.remove(address);
+        }
+        hashMatrix.put(address, cell);
+    }
+
+    public void SetCellValue(String address, double newValue){
+        CellFormula c = (CellFormula) hashMatrix.get(address);
+        c.value =  newValue;
     }
 
     public Hashtable GetMatrix(){return hashMatrix;}
@@ -60,7 +81,7 @@ public class HashSpreadsheet implements Spreadsheet{
             for(int j = 0; j< maxC;j++){
                 String address = help.fromIntToString(j+1) + rowAddress;
                 if(this.GetCell(address)!= null){
-                   rowContent = rowContent + this.GetCell(address).content + ";";
+                   rowContent = rowContent + this.GetCell(address).content.replace(";", ",") + ";";
                 }
                 else{
                     rowContent += ";";
@@ -89,7 +110,7 @@ public class HashSpreadsheet implements Spreadsheet{
                 for(int i = 0; i<content.length;i++){
                     column = help.fromIntToString(i+1);
                     String address = column + numRow;
-                    this.SetCell(address, content[i]);
+                    this.SetCell(address, content[i].replace(",", ";"));
 
                 }
                 numRow++;

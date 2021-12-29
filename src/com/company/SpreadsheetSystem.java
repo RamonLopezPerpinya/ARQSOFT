@@ -10,6 +10,7 @@ public class SpreadsheetSystem {
     GUI gui;
     Helper help;
     Scanner sn;
+    Calculator calc;
 
     public SpreadsheetSystem(){
 
@@ -17,16 +18,12 @@ public class SpreadsheetSystem {
         gui = new GUI();
         help = new Helper();
         sn = new Scanner(System.in);
+        calc = new Calculator();
 
     }
 
     public void run() throws IOException {
-        /*
-        spreadsheet.SetCell("E1", "hola");
-        spreadsheet.SetCell("E2", "adeu");
-        spreadsheet.SetCell("A23", "socors");
-        spreadsheet.SetCell("ZZ3", "maldicion");
-        */
+
         int option;
         boolean run = true;
         String filename = "";
@@ -65,6 +62,11 @@ public class SpreadsheetSystem {
                 default:
                     System.out.println("Only number from 0 to 6 !!  !!! ");
             }
+
+            for(String address : spreadsheet.GetFormulas()){
+                calc.run(spreadsheet, address);
+
+            }
         }
     }
 
@@ -73,8 +75,15 @@ public class SpreadsheetSystem {
     public void printCell(String addres){
         Cell returnedCell = this.spreadsheet.GetCell(addres);
         if(returnedCell != null) {
-            System.out.println("Addres: " + addres);
-            System.out.println("Content: " + returnedCell.content);
+            if(returnedCell instanceof CellFormula){
+                System.out.println("Addres: " + addres);
+                System.out.println("Content: " + returnedCell.content);
+                System.out.println("Value: " + Double.toString(((CellFormula) returnedCell).value));
+            }
+            else {
+                System.out.println("Addres: " + addres);
+                System.out.println("Content: " + returnedCell.content);
+            }
         }
         else
             System.out.println("This cell has no value");
@@ -88,7 +97,7 @@ public class SpreadsheetSystem {
     // edit cell
     public void editCell(String addres){
         String content = gui.getUserInput("Introduce the content:", sn);
-        spreadsheet.SetCell(addres, content);
+        this.spreadsheet.SetCell(addres, content);
     }
 
     // export spreadsheet

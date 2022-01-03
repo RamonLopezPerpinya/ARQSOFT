@@ -64,4 +64,30 @@ public class Helper {
         }
         return columnName;
     }
+
+    public String checkNextSeparator(String formula){
+        int i =0;
+        String[] separators = {"\\+","-","\\*","/"};
+        String[] divided= null;
+        while(divided == null && i<4){
+            divided =  this.checkFormulaAndSplit(formula,separators[i]);
+            i++;
+        }
+        if(divided == null){
+            return "";
+        }
+        return separators[i-1];
+    }
+
+
+
+    public String[] checkFormulaAndSplit(String formula, String separator){
+        String aux = separator.replace("\\", "");
+        if(formula.contains(aux)) {
+            return formula.split(separator);
+        }
+        else
+            return null;
+    }
 }
+

@@ -16,7 +16,7 @@ public interface Spreadsheet {
 
     public void SetCell(String address, String newContent);
 
-    public void SetCellValue(String address, double newValue);
+    public void SetTreeCellFormula(String address, Tree t);
 
     public String exportSpreadsheet();
 

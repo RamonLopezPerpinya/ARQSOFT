@@ -10,5 +10,9 @@ public class CellString extends Cell{
         this.content =value;
     }
 
+    public String getPrintValue(){
+        return this.value;
+    }
+
 
 }

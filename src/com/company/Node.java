@@ -4,16 +4,22 @@ import java.util.ArrayList;
 
 public class Node {
 
-    String value;
+    String content;
     ArrayList<Node> children;
+    Double value;
 
 
-    public Node (String value){
+    public Node (String content){
 
-        this.value = value;
+        this.content = content;
         this.children = new ArrayList<Node>();
 
     }
+
+    public void setValue (double value){
+        this.value = value;
+    }
+
 
 
 

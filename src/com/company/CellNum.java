@@ -12,5 +12,11 @@ public class CellNum extends Cell{
 
     }
 
+    public String getPrintValue(){
+    return Double.toString(this.value);
+    }
+
+
+
 
 }

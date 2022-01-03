@@ -157,7 +157,7 @@ public class GUI {
                     System.out.print(this.formatCellContent("", cell_size));
                 }
                 else{
-                    System.out.print(this.formatCellContent(currentCell.content, cell_size));
+                    System.out.print(this.formatCellContent(currentCell.getPrintValue(), cell_size));
                 }
             }
             System.out.print("\n");

@@ -15,6 +15,10 @@ public class CellFormula extends Cell{
         this.value = tree.value;
     }
 
+    public String getPrintValue(){
+        return Double.toString(this.value);
+    }
+
 
 
 }

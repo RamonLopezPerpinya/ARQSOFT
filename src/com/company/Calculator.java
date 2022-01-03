@@ -48,10 +48,46 @@ public class Calculator {
                 }
         }
         return this.sumArrayList(this.Selection(suma));*/
-
         Tree tree = new Tree(formula, buildNode(formula));
-
+        this.computeTree(tree);
         return tree;
+    }
+
+    public Tree computeTree(Tree tree){
+        tree.root = this.computeNode(tree.root);
+        tree.value = tree.root.value;
+        return tree;
+    }
+
+    public Node computeNode(Node node){
+        if(help.isNumeric(node.content))
+            return  node;
+        else
+            return returnOperation(node);
+    }
+
+    public Node returnOperation(Node node){
+        Node number;
+        ArrayList<Double> valuesToOperate = new ArrayList<Double>();
+        for(Node child : node.children){
+            number = this.computeNode(child);
+            valuesToOperate.add(number.value);
+        }
+        switch (node.content){
+            case "+":
+                node.value = this.sumArrayList(valuesToOperate);
+                break;
+            case "-":
+                node.value = this.substractArrayList(valuesToOperate);
+                break;
+            case "*":
+                node.value = this.productArrayList(valuesToOperate);
+                break;
+            case "/":
+                node.value = this.divisionArrayList(valuesToOperate);
+                break;
+        }
+        return node;
     }
 
     public Node buildNode(String formula){
@@ -100,6 +136,7 @@ public class Calculator {
 
         if(separator == ""){
             node = new Node(formula);
+            node.setValue(Double.parseDouble(formula));
         }
         else{
             separator = separator.replace("\\", "");
@@ -165,6 +202,28 @@ public class Calculator {
         double result = 0;
         for(Double num : arrayNums)
             result = result + num;
+
+        return result;
+    }
+
+    public double substractArrayList(ArrayList<Double> arrayNums){
+        double result = arrayNums.get(0);
+        for(int i = 1; i<arrayNums.size(); i++)
+            result = result-arrayNums.get(i);
+
+        return result;
+    }
+    public double productArrayList(ArrayList<Double> arrayNums){
+        double result = arrayNums.get(0);
+        for(int i = 1; i<arrayNums.size(); i++)
+            result = result*arrayNums.get(i);
+
+        return result;
+    }
+    public double divisionArrayList(ArrayList<Double> arrayNums){
+        double result = arrayNums.get(0);
+        for(int i = 1; i<arrayNums.size(); i++)
+            result = result/arrayNums.get(i);
 
         return result;
     }

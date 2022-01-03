@@ -13,6 +13,10 @@ public class Cell{
 
     }
 
+    public String getPrintValue(){
+        return "";
+    }
+
 
 
 }

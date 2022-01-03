@@ -43,10 +43,11 @@ public class HashSpreadsheet implements Spreadsheet{
         hashMatrix.put(address, cell);
     }
 
-    public void SetCellValue(String address, double newValue){
+    public void SetTreeCellFormula(String address, Tree t){
         CellFormula c = (CellFormula) hashMatrix.get(address);
-        c.value =  newValue;
+        c.setValueAndTree(t);
     }
+
 
     public Hashtable GetMatrix(){return hashMatrix;}
 
@@ -108,10 +109,11 @@ public class HashSpreadsheet implements Spreadsheet{
 
 
                 for(int i = 0; i<content.length;i++){
-                    column = help.fromIntToString(i+1);
-                    String address = column + numRow;
-                    this.SetCell(address, content[i].replace(",", ";"));
-
+                    if(content[i] != "") {
+                        column = help.fromIntToString(i + 1);
+                        String address = column + numRow;
+                        this.SetCell(address, content[i].replace(",", ";"));
+                    }
                 }
                 numRow++;
                 line = reader.readLine();

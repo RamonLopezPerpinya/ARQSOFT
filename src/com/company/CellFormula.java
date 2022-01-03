@@ -8,8 +8,11 @@ public class CellFormula extends Cell{
 
     public CellFormula(String content){
         this.content = content;
-        //tree = new Tree(content);
-        this.value = calculator.Result(content);
+    }
+
+    public void setValueAndTree(Tree tree){
+        this.tree = tree;
+        this.value = tree.value;
     }
 
 

@@ -1,7 +1,6 @@
 package com.company;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
@@ -13,13 +12,21 @@ public class Calculator {
 
 
     public void run(Spreadsheet sp, String address){
-        this.spreadsheet = sp;
+        spreadsheet = sp;
         String content = spreadsheet.GetCell(address).content;
-        spreadsheet.SetCellValue(address,  this.Result(content));
+        // clean formula: remove = at begin and remove white spaces
+        content = content.substring(1);
+        content = content.replace(" ", "");
+
+        // get resultant tree from formula
+        Tree t = Result(content);
+        spreadsheet.SetTreeCellFormula(address, t);
     }
+
     //=SUM(...)+4+45*56-MIN(-...)/777
     //=A3:E3
-    public double Result(String formula){
+
+    public Tree Result(String formula){
         /*String suma = "";
         if(formula.indexOf("SUM")>=0){
 
@@ -41,46 +48,69 @@ public class Calculator {
                 }
         }
         return this.sumArrayList(this.Selection(suma));*/
-        Tree newTree = new Tree();
-        String separator = this.checkNextSeparator(formula);
-        String[] children = this.checkFormulaAndSplit(formula,separator);
-        newTree.root = new Node(separator);
-        for(int i = 0; i<children.length;i++){
-            newTree.root.children.add(new Node(children[i]));
-        }
-        return 1.1;
+
+        Tree tree = new Tree(formula, buildNode(formula));
+
+        return tree;
     }
 
-    public String checkNextSeparator(String formula){
-        int i =0;
-        String[] separators = {"\\*","/","\\+","-"};
-        String[] divided= null;
-        while(divided == null && i<4){
-            divided =  this.checkFormulaAndSplit(formula,separators[i]);
-            i++;
+    public Node buildNode(String formula){
+        /*String suma = "";
+        if(formula.indexOf("SUM")>=0){
+
+                int index = formula.indexOf("SUM");
+                int j = index + 3;
+                int openP = 0;
+                int closeP = 0;
+                while(j<formula.length()){
+                    if(formula.charAt(j) == '(')
+                        openP++;
+                    if(formula.charAt(j) == ')') {
+                        closeP++;
+                        if (closeP == openP) {
+                            suma = formula.substring(index + 4, j );
+                            break;
+                        }
+                    }
+                      j++;
+                }
         }
-        if(divided == null){
-            return "";
+        return this.sumArrayList(this.Selection(suma));*/
+        Node node;
+
+        // check parenthesis
+        int j = 0, openP = 0, closeP = 0, firstOpen = 0;
+
+        while(j<formula.length()){
+            if(formula.charAt(j) == '(') {
+                if(openP == 0)
+                    firstOpen = j;
+                openP++;
+            }
+            else if(formula.charAt(j) == ')')
+                closeP++;
+            if(openP == closeP && openP != 0)
+                break;
+            j++;
         }
-        return separators[i-1];
+        //node = buildNode(formula.substring(firstOpen+1, j-1));
+        String separator = help.checkNextSeparator(formula);
+
+        String[] children = help.checkFormulaAndSplit(formula,separator);
+
+        if(separator == ""){
+            node = new Node(formula);
+        }
+        else{
+            separator = separator.replace("\\", "");
+            node = new Node(separator);
+            for(int i = 0; i<children.length;i++){
+                node.children.add(this.buildNode(children[i]));
+            }
+        }
+        return node;
     }
 
-
-
-    public String[] checkFormulaAndSplit(String formula, String separator){
-        String aux = separator.replace("\\", "");
-        if(formula.contains(aux)) {
-            return formula.split(separator);
-        }
-        else
-            return null;
-        }
-
-    /*public String[] checkProducts(String[] arrayProducts){
-        for(int i=0; i<=arrayProducts.length;i++){
-        String [] arrayRatio = arrayProducts[i].split("/");}
-        return arrayRatio;
-    }*/
 
     //A1:B2
     public ArrayList<String> Range(String range){

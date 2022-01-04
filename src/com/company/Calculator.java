@@ -1,6 +1,7 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
@@ -10,6 +11,24 @@ public class Calculator {
     Spreadsheet spreadsheet = new HashSpreadsheet();
     Helper help = new Helper();
 
+    public boolean fourmulaIsIllegal(String formula) {
+
+        int j = 0, openP = 0, closeP = 0;
+
+        while (j < formula.length()) {
+            if (formula.charAt(j) == '(')
+                openP++;
+            else if (formula.charAt(j) == ')')
+                closeP++;
+            j++;
+        }
+
+        if (openP != closeP)
+            return true;
+        else
+            return false;
+    }
+
 
     public void run(Spreadsheet sp, String address){
         spreadsheet = sp;
@@ -18,8 +37,14 @@ public class Calculator {
         content = content.substring(1);
         content = content.replace(" ", "");
 
-        // get resultant tree from formula
-        Tree t = Result(content);
+        Tree t;
+        if(fourmulaIsIllegal(content)){
+            t = new Tree(content, new Node("ERROR"));
+        }
+        else {
+            // get resultant tree from formula
+            t = Result(content);
+        }
         spreadsheet.SetTreeCellFormula(address, t);
     }
 
@@ -48,7 +73,7 @@ public class Calculator {
                 }
         }
         return this.sumArrayList(this.Selection(suma));*/
-        Tree tree = new Tree(formula, buildNode(formula));
+        Tree tree = new Tree(formula, buildNode(formula,null));
         this.computeTree(tree);
         return tree;
     }
@@ -90,7 +115,10 @@ public class Calculator {
         return node;
     }
 
-    public Node buildNode(String formula){
+    public Node buildNode(String formula, ArrayList<Node> parenthesisNodes){
+
+        Node node;
+
         /*String suma = "";
         if(formula.indexOf("SUM")>=0){
 
@@ -112,27 +140,54 @@ public class Calculator {
                 }
         }
         return this.sumArrayList(this.Selection(suma));*/
-        Node node;
 
-        // check parenthesis
-        int j = 0, openP = 0, closeP = 0, firstOpen = 0;
+        // check illegal functions >:(
+
+
+
+
+        // check parenthesis to create sub tree recursively and substitute its presence in formula by hashtag
+        // store the subtree in NodesParenthesis which is not reliable at all maybe we should do a hash tabl
+
+        int idxOpen = 0, idxClose = 0, j = 0, openP = 0, closeP = 0;
+        int nSeparated_Parethesis = 0;
+        ArrayList<Node> NodesParenthesis = new ArrayList<Node>();
+
+        if(parenthesisNodes!=null)
+            NodesParenthesis.addAll(parenthesisNodes);
 
         while(j<formula.length()){
             if(formula.charAt(j) == '(') {
                 if(openP == 0)
-                    firstOpen = j;
+                    idxOpen = j;
                 openP++;
             }
             else if(formula.charAt(j) == ')')
                 closeP++;
-            if(openP == closeP && openP != 0)
-                break;
+            if(openP == closeP && openP != 0) {
+                nSeparated_Parethesis++;
+                openP = 0;
+                closeP = 0;
+                idxClose = j;
+
+                // build node with interior parenthesis and add to list of nodes
+                NodesParenthesis.add(buildNode(formula.substring(idxOpen+1, idxClose),null));
+
+                // Substitute the parenthesis used to compute node with #
+                formula = formula.substring(0, idxOpen) + "#" + formula.substring(idxClose + 1);
+
+                // reset index to avoid skiping characters
+                j = j - idxClose + idxOpen;
+
+            }
             j++;
         }
-        //node = buildNode(formula.substring(firstOpen+1, j-1));
+
         String separator = help.checkNextSeparator(formula);
 
         String[] children = help.checkFormulaAndSplit(formula,separator);
+
+        int ParenthesisStored = 0;
 
         if(separator == ""){
             node = new Node(formula);
@@ -142,7 +197,18 @@ public class Calculator {
             separator = separator.replace("\\", "");
             node = new Node(separator);
             for(int i = 0; i<children.length;i++){
-                node.children.add(this.buildNode(children[i]));
+                if(Objects.equals(children[i], "#")){
+                    node.children.add(NodesParenthesis.get(ParenthesisStored));
+                    ParenthesisStored++;
+                }else{
+                    if(children[i].contains("#")){
+                        node.children.add(this.buildNode(children[i],NodesParenthesis));
+                        ParenthesisStored++;
+                    }
+                    else{
+                        node.children.add(this.buildNode(children[i],null));
+                    }
+                }
             }
         }
         return node;

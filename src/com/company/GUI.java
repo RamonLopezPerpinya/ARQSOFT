@@ -80,9 +80,29 @@ public class GUI {
         }
 
         System.out.println();
-        int input = this.GetNumberFromUser("Which spreadsheet do you want to load from the avaliable above? (enter number)",
-                "Please, only number", sn );
+        int input = this.GetNumberFromRange("Please, only a spreadsheet available", "Which spreadsheet do you want to load from the avaliable above? (enter number)", fileNames.length,sn );
         return "output/" + fileNames[input];
+    }
+
+    public int GetNumberFromRange(String message, String question, int range, Scanner sn){
+        boolean notInRange = true;
+        int num = 0;
+        while(notInRange) {
+            System.out.println(question);
+            try {
+                num = sn.nextInt();
+                for(int i = 0; i<range; i++){
+                    if(i == num){
+                        return num;
+                    }
+                }
+                System.out.println(message);
+            } catch (InputMismatchException e) {
+                System.out.println(message);
+            }
+            sn.nextLine();
+        }
+        return num;
     }
 
     public String exportInterface(Scanner sn) throws IOException {

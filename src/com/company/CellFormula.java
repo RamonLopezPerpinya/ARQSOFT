@@ -16,7 +16,11 @@ public class CellFormula extends Cell{
     }
 
     public String getPrintValue(){
-        return Double.toString(this.value);
+        if(this.tree.root.content.contains("Error")){
+            return this.tree.root.content;
+        }
+        else{
+        return Double.toString(this.value);}
     }
 
 

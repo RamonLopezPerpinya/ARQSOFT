@@ -12,6 +12,7 @@ public class Tree {
     public Tree(String formula, Node root){
         this.formula = formula;
         this.root = root;
+
     }
 
 }

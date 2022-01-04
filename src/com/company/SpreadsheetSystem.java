@@ -78,8 +78,9 @@ public class SpreadsheetSystem {
             if(returnedCell instanceof CellFormula){
                 System.out.println("Addres: " + addres);
                 System.out.println("Content: " + returnedCell.content);
-                System.out.println("Value: " + Double.toString(((CellFormula) returnedCell).value));
-            }
+
+                System.out.println("Value: " + returnedCell.getPrintValue());
+                }
             else {
                 System.out.println("Addres: " + addres);
                 System.out.println("Content: " + returnedCell.content);

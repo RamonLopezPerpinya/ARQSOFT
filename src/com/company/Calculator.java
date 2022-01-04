@@ -11,22 +11,30 @@ public class Calculator {
     Spreadsheet spreadsheet = new HashSpreadsheet();
     Helper help = new Helper();
 
-    public boolean fourmulaIsIllegal(String formula) {
+    public String fourmulaIsIllegal(String formula) {
 
         int j = 0, openP = 0, closeP = 0;
-
+        if(formula.contains("#")){
+            return "Error, this '#' symbol is not allowed";
+        }
         while (j < formula.length()) {
-            if (formula.charAt(j) == '(')
+            if (formula.charAt(j) == '(') {
+                if (formula.charAt(j + 1) == ')') {
+                    return "Error, there is no content in some parethesis";
+                }
                 openP++;
-            else if (formula.charAt(j) == ')')
+            }
+            else if (formula.charAt(j) == ')'){
                 closeP++;
+            }
             j++;
+
         }
 
         if (openP != closeP)
-            return true;
+            return "Error the number of parethesis is wrong";
         else
-            return false;
+            return "";
     }
 
 
@@ -38,8 +46,9 @@ public class Calculator {
         content = content.replace(" ", "");
 
         Tree t;
-        if(fourmulaIsIllegal(content)){
-            t = new Tree(content, new Node("ERROR"));
+        String errorMessage = fourmulaIsIllegal(content);
+        if(errorMessage != "" ){
+            t = new Tree(content, new Node(errorMessage));
         }
         else {
             // get resultant tree from formula
@@ -73,7 +82,14 @@ public class Calculator {
                 }
         }
         return this.sumArrayList(this.Selection(suma));*/
-        Tree tree = new Tree(formula, buildNode(formula,null));
+        Tree tree;
+        if(buildNode(formula,null) == null){
+            tree = new Tree(formula, new Node("Error, invalid content"));
+        }
+        else {
+            tree = new Tree(formula, buildNode(formula, null));
+        }
+
         this.computeTree(tree);
         return tree;
     }
@@ -171,8 +187,12 @@ public class Calculator {
                 idxClose = j;
 
                 // build node with interior parenthesis and add to list of nodes
-                NodesParenthesis.add(buildNode(formula.substring(idxOpen+1, idxClose),null));
-
+                if(buildNode(formula.substring(idxOpen+1, idxClose), null) == null){
+                    return null;
+                }
+                else {
+                    NodesParenthesis.add(buildNode(formula.substring(idxOpen + 1, idxClose), null));
+                }
                 // Substitute the parenthesis used to compute node with #
                 formula = formula.substring(0, idxOpen) + "#" + formula.substring(idxClose + 1);
 
@@ -186,12 +206,22 @@ public class Calculator {
         String separator = help.checkNextSeparator(formula);
 
         String[] children = help.checkFormulaAndSplit(formula,separator);
-
+        if(children.length == 0){
+            return null;
+        }
         int ParenthesisStored = 0;
 
         if(separator == ""){
-            node = new Node(formula);
-            node.setValue(Double.parseDouble(formula));
+            if(help.isNumeric(children[0])){
+                node = new Node(formula);
+                node.setValue(Double.parseDouble(formula));
+            }
+            else if(children[0].contains("#")){
+                node = NodesParenthesis.get(0);
+            }
+            else{
+                return null;
+            }
         }
         else{
             separator = separator.replace("\\", "");
@@ -202,11 +232,21 @@ public class Calculator {
                     ParenthesisStored++;
                 }else{
                     if(children[i].contains("#")){
-                        node.children.add(this.buildNode(children[i],NodesParenthesis));
-                        ParenthesisStored++;
+                        if(this.buildNode(children[i],NodesParenthesis) == null){
+                            return null;
+                        }
+                        else {
+                            node.children.add(this.buildNode(children[i], NodesParenthesis));
+                            ParenthesisStored++;
+                        }
                     }
                     else{
-                        node.children.add(this.buildNode(children[i],null));
+                        if(this.buildNode(children[i],null) == null){
+                            return null;
+                        }
+                        else {
+                            node.children.add(this.buildNode(children[i], null));
+                        }
                     }
                 }
             }

@@ -1,10 +1,13 @@
 package com.company;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class Calculator {
 
@@ -61,27 +64,7 @@ public class Calculator {
     //=A3:E3
 
     public Tree Result(String formula){
-        /*String suma = "";
-        if(formula.indexOf("SUM")>=0){
 
-                int index = formula.indexOf("SUM");
-                int j = index + 3;
-                int openP = 0;
-                int closeP = 0;
-                while(j<formula.length()){
-                    if(formula.charAt(j) == '(')
-                        openP++;
-                    if(formula.charAt(j) == ')') {
-                        closeP++;
-                        if (closeP == openP) {
-                            suma = formula.substring(index + 4, j );
-                            break;
-                        }
-                    }
-                      j++;
-                }
-        }
-        return this.sumArrayList(this.Selection(suma));*/
         Tree tree;
         if(buildNode(formula,null) == null){
             tree = new Tree(formula, new Node("Error, invalid content"));
@@ -127,6 +110,7 @@ public class Calculator {
             case "/":
                 node.value = this.divisionArrayList(valuesToOperate);
                 break;
+
         }
         return node;
     }
@@ -135,34 +119,19 @@ public class Calculator {
 
         Node node;
 
-        /*String suma = "";
-        if(formula.indexOf("SUM")>=0){
 
-                int index = formula.indexOf("SUM");
-                int j = index + 3;
-                int openP = 0;
-                int closeP = 0;
-                while(j<formula.length()){
-                    if(formula.charAt(j) == '(')
-                        openP++;
-                    if(formula.charAt(j) == ')') {
-                        closeP++;
-                        if (closeP == openP) {
-                            suma = formula.substring(index + 4, j );
-                            break;
-                        }
-                    }
-                      j++;
-                }
+        String initialSelectionOperation = this.checkSelectionOperation(formula.substring(0,min(4,formula.length())));
+
+        if(initialSelectionOperation != "" && Objects.equals(formula.substring(formula.length()-1), ")")){
+
+            node = new Node(initialSelectionOperation);
+            node.children.addAll(this.Selection(formula.substring(initialSelectionOperation.length()+1, formula.length() -1 )));
+            return node;
         }
-        return this.sumArrayList(this.Selection(suma));*/
-
-        // check illegal functions >:(
-
-
 
 
         // check parenthesis to create sub tree recursively and substitute its presence in formula by hashtag
+        // if parenthesis is preceeded by
         // store the subtree in NodesParenthesis which is not reliable at all maybe we should do a hash tabl
 
         int idxOpen = 0, idxClose = 0, j = 0, openP = 0, closeP = 0;
@@ -187,14 +156,22 @@ public class Calculator {
                 idxClose = j;
 
                 // build node with interior parenthesis and add to list of nodes
-                if(buildNode(formula.substring(idxOpen+1, idxClose), null) == null){
-                    return null;
+                String selectionOperation = this.checkSelectionOperation(formula.substring(max(idxOpen-4,0),idxOpen));
+
+                if(selectionOperation == "")
+                    if (buildNode(formula.substring(idxOpen + 1, idxClose), null) == null)
+                        return null;
+                    else {
+                        NodesParenthesis.add(buildNode(formula.substring(idxOpen + 1, idxClose), null));
+                        formula = formula.substring(0, idxOpen) + "#" + formula.substring(idxClose + 1);
+                    }
+
+                else{
+                    NodesParenthesis.add(buildNode(selectionOperation + formula.substring(idxOpen, idxClose + 1), null));
+                    formula = formula.substring(0, idxOpen-selectionOperation.length()) + "#" + formula.substring(idxClose + 1);
                 }
-                else {
-                    NodesParenthesis.add(buildNode(formula.substring(idxOpen + 1, idxClose), null));
-                }
-                // Substitute the parenthesis used to compute node with #
-                formula = formula.substring(0, idxOpen) + "#" + formula.substring(idxClose + 1);
+
+
 
                 // reset index to avoid skiping characters
                 j = j - idxClose + idxOpen;
@@ -254,6 +231,19 @@ public class Calculator {
         return node;
     }
 
+    public String checkSelectionOperation(String formula){
+        if(formula.contains("SUM"))
+            return "SUM";
+        else if (formula.contains("MIN"))
+            return "MIN";
+        else if (formula.contains("MAX"))
+            return "MAX";
+        else if (formula.contains("MEAN"))
+            return "MEAN";
+        else
+            return "";
+
+    }
 
     //A1:B2
     public ArrayList<String> Range(String range){
@@ -270,16 +260,44 @@ public class Calculator {
     }
     //A1;C5;.....
     //C5 = SUM(A1:C34;3+3;A1+3)
-    public ArrayList<Double> Selection(String selection){
-        ArrayList<String> finalSelection = new ArrayList<String>();
-        String [] elements =  selection.split(";");
-        for(int i = 0; i<elements.length;i++){
-            if(elements[i].contains(":"))
-                finalSelection.addAll(this.Range(elements[i]));
-            else
-                finalSelection.add(elements[i]);
+    public ArrayList<String> ParseSelectionContent(String content){
+        int parenthesis = 0;
+        ArrayList<Integer> idxList = new ArrayList<Integer>();
+        ArrayList<String> SelectionList = new ArrayList<String>();
+
+        for(int i = 0; i < content.length(); i++){
+            char c = content.charAt(i);
+            if(c == '(')
+                parenthesis++;
+            else if(c == ')')
+                parenthesis--;
+
+            if(parenthesis != 0)
+                continue;
+            else if(c == ';')
+                idxList.add(i);
         }
-        return this.fromAddressToDouble(finalSelection);
+
+        int idxLeft = 0;
+        for(int idxRight : idxList){
+            SelectionList.add(content.substring(idxLeft,idxRight));
+            idxLeft = idxRight + 1;
+        }
+        SelectionList.add(content.substring(idxLeft));
+        return SelectionList;
+    }
+
+    public ArrayList<Node> Selection(String selection){
+        ArrayList<Node> finalSelection = new ArrayList<Node>();
+        ArrayList<String> elements =  ParseSelectionContent(selection);
+        for(String element : elements){
+            /*
+            if(element.contains(":"))
+                finalSelection.addAll(this.Range(element));
+            else*/
+            finalSelection.add(buildNode(element, null));
+        }
+        return finalSelection;
     }
 
     public ArrayList<Double> fromAddressToDouble(ArrayList<String> selection){

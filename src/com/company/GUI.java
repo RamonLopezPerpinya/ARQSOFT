@@ -70,7 +70,7 @@ public class GUI {
     }
 
     public String importInterface(Scanner sn) throws IOException {
-        System.out.println("You selected the option: ExportSpreadsheet");
+        System.out.println("You selected the option: ImportSpreadsheet");
         String userDirectory = System.getProperty("user.dir");
         File file = new File(userDirectory+"/output");
         String[] fileNames = file.list();
@@ -106,7 +106,7 @@ public class GUI {
     }
 
     public String exportInterface(Scanner sn) throws IOException {
-        System.out.println("You selected the option: ImportSpreadsheet");
+        System.out.println("You selected the option: ExportSpreadsheet");
         System.out.println("Which name do you want to save the spreadsheet");
         String name = sn.nextLine();
         return "output/" + name;

@@ -1,5 +1,6 @@
 package com.company;
 
+import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -84,7 +85,7 @@ public class Calculator {
     }
 
     public Node computeNode(Node node){
-        if(help.isNumeric(node.content))
+        if(help.isNumeric(node.content) || this.checkAddress(node.content))
             return  node;
         else
             return returnOperation(node);
@@ -110,7 +111,18 @@ public class Calculator {
             case "/":
                 node.value = this.divisionArrayList(valuesToOperate);
                 break;
-
+            case "SUM":
+                node.value = this.sumArrayList(valuesToOperate);
+                break;
+            case "MAX":
+                node.value = this.maxArrayList(valuesToOperate);
+                break;
+            case "MIN":
+                node.value = this.minArrayList(valuesToOperate);
+                break;
+            case "MEAN":
+                node.value = this.promedArrayList(valuesToOperate);
+                break;
         }
         return node;
     }
@@ -121,7 +133,7 @@ public class Calculator {
 
 
         String initialSelectionOperation = this.checkSelectionOperation(formula.substring(0,min(4,formula.length())));
-
+        //In charge of the control of "selection operations"
         if(initialSelectionOperation != "" && Objects.equals(formula.substring(formula.length()-1), ")")){
 
             node = new Node(initialSelectionOperation);
@@ -179,15 +191,21 @@ public class Calculator {
             }
             j++;
         }
-
+        //Here below, only works with operations
         String separator = help.checkNextSeparator(formula);
+        String[] children;
+        if(separator!= ""){
+            children = help.checkFormulaAndSplit(formula,separator);
+        }
+        else{
+            children = new String[]{formula};
+            }
 
-        String[] children = help.checkFormulaAndSplit(formula,separator);
         if(children.length == 0){
             return null;
         }
         int ParenthesisStored = 0;
-
+        //Create a node without operations
         if(separator == ""){
             if(help.isNumeric(children[0])){
                 node = new Node(formula);
@@ -195,6 +213,16 @@ public class Calculator {
             }
             else if(children[0].contains("#")){
                 node = NodesParenthesis.get(0);
+            }
+            else if(this.checkAddress(children[0])){
+                node =  new Node(formula);
+                Cell cell = spreadsheet.GetCell(formula);
+                if(cell instanceof CellString || cell == null){
+                    node.setValue(Double.NaN);
+                }
+                else{
+                    node.setValue(((CellNum) spreadsheet.GetCell(formula)).value);
+                }
             }
             else{
                 return null;
@@ -229,6 +257,25 @@ public class Calculator {
             }
         }
         return node;
+    }
+    //Aa3
+    public boolean checkAddress(String address){
+        int cont = 0;
+        if(Character.isAlphabetic(address.charAt(0))== false){
+            return false;
+        }
+        for(int i =0; i<address.length();i++){
+            if(Character.isAlphabetic(address.charAt(i))){
+                cont++;
+            }
+            else{
+                break;
+            }
+        }
+        String digits = address.substring(cont);
+
+        return help.isNumeric(digits);
+
     }
 
     public String checkSelectionOperation(String formula){

@@ -14,9 +14,11 @@ public interface Spreadsheet {
 
     public void DeleteCell(String cell);
 
+    public void ClearSpreadsheet();
+
     public void SetCell(String address, String newContent);
 
-    public void SetTreeCellFormula(String address, Tree t);
+    public void SetResult(String address, Tree result);
 
     public String exportSpreadsheet();
 

@@ -1,18 +1,39 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Tree {
 
-    Double value = 0.0;
     String formula;
     Node root;
-    Helper helper = new Helper();
+    NodeFactory NF = new NodeFactory();
 
-    public Tree(String formula, Node root){
+    public Tree(String formula, String errorMessage){
         this.formula = formula;
-        this.root = root;
+
+
+        if(!Objects.equals(errorMessage, "")){
+            root = new Node(errorMessage);
+        }
+
+        else{
+            Node node = NF.buildNode(formula,null);
+            if(node == null)
+                root = new Node("Error, invalid content");
+            else
+                root = node;
+        }
+
+        ArrayList<String> addressList = new ArrayList<String>();
+        addressList.addAll(getAddressess());
 
     }
+
+    public ArrayList<String> getAddressess(){
+        return root.getAddressRec();
+    }
+
+
 
 }

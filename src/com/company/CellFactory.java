@@ -4,6 +4,7 @@ public class CellFactory {
 
     Helper help;
 
+
     public CellFactory(){
 
         help = new Helper();

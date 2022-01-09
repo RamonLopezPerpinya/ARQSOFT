@@ -29,9 +29,14 @@ public class HashSpreadsheet implements Spreadsheet{
 
 
     public void DeleteCell(String cell){
+        setOfFormulas.remove(cell);
         hashMatrix.remove(cell);
     }
 
+    public void ClearSpreadsheet(){
+        hashMatrix = new Hashtable<String,Cell>();
+        setOfFormulas = new TreeSet<String>();
+    }
     public void SetCell(String address, String newContent){
         Cell cell = cellFactory.constructCell(newContent);
         if( cell instanceof CellFormula){
@@ -43,9 +48,9 @@ public class HashSpreadsheet implements Spreadsheet{
         hashMatrix.put(address, cell);
     }
 
-    public void SetTreeCellFormula(String address, Tree t){
+    public void SetResult(String address, Tree result){
         CellFormula c = (CellFormula) hashMatrix.get(address);
-        c.setValueAndTree(t);
+        c.setTreeValue(result);
     }
 
 
@@ -96,6 +101,8 @@ public class HashSpreadsheet implements Spreadsheet{
     }
 
     public boolean importSpreadSheet(BufferedReader reader) throws IOException {
+
+            ClearSpreadsheet();
 
             StringBuilder sb = new StringBuilder();
             String line = reader.readLine();

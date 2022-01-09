@@ -89,5 +89,65 @@ public class Helper {
         else
             return null;
     }
+
+    public String checkSelectionOperation(String formula){
+        if(formula.contains("SUM"))
+            return "SUM";
+        else if (formula.contains("MIN"))
+            return "MIN";
+        else if (formula.contains("MAX"))
+            return "MAX";
+        else if (formula.contains("MEAN"))
+            return "MEAN";
+        else
+            return "";
+
+    }
+
+    public boolean isAddress(String address){
+        int cont = 0;
+        if(Character.isAlphabetic(address.charAt(0))== false){
+            return false;
+        }
+        for(int i =0; i<address.length();i++){
+            if(Character.isAlphabetic(address.charAt(i))){
+                cont++;
+            }
+            else{
+                break;
+            }
+        }
+        String digits = address.substring(cont);
+
+        return this.isNumeric(digits);
+
+    }
+
+    public ArrayList<String> ParseSelectionContent(String content){
+        int parenthesis = 0;
+        ArrayList<Integer> idxList = new ArrayList<Integer>();
+        ArrayList<String> SelectionList = new ArrayList<String>();
+
+        for(int i = 0; i < content.length(); i++){
+            char c = content.charAt(i);
+            if(c == '(')
+                parenthesis++;
+            else if(c == ')')
+                parenthesis--;
+
+            if(parenthesis != 0)
+                continue;
+            else if(c == ';')
+                idxList.add(i);
+        }
+
+        int idxLeft = 0;
+        for(int idxRight : idxList){
+            SelectionList.add(content.substring(idxLeft,idxRight));
+            idxLeft = idxRight + 1;
+        }
+        SelectionList.add(content.substring(idxLeft));
+        return SelectionList;
+    }
 }
 

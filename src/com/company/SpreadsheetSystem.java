@@ -63,10 +63,7 @@ public class SpreadsheetSystem {
                     System.out.println("Only number from 0 to 6 !!  !!! ");
             }
 
-            for(String address : spreadsheet.GetFormulas()){
-                calc.run(spreadsheet, address);
-
-            }
+            calc.run(spreadsheet);
         }
     }
 
